@@ -19,7 +19,7 @@ namespace AltanicPlayer
         Addlist addlist = new Addlist();
         Mplay mplay = new Mplay();
         Thread moveBar;
-
+        //노무현!!
         public List<string> musics = new List<string>();
         private bool isGoing = false;
         private bool interrupt;
