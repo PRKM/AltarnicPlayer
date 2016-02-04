@@ -217,6 +217,7 @@
             this.MaximizeBox = false;
             this.Name = "AlPlayer";
             this.Text = "Altanic Player";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AlPlayer_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

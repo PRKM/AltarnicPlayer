@@ -20,17 +20,16 @@ namespace AltanicPlayer
         }
     }
 
-    public class Mplay : IDisposable
+    public class Mplay
     {
         IrrKlang.ISoundEngine player = new IrrKlang.ISoundEngine();
         IrrKlang.ISound curMusic;
 
-        public void PlayPause(string Mode, ref bool isGoing, string curMusicPath)
+        public void PlayPause(string Mode, bool isGoing, string curMusicPath)
         {
             if (!isGoing)
             {
                 curMusic = player.Play2D(curMusicPath);
-                isGoing = true;
             }
             else
             {
@@ -53,11 +52,6 @@ namespace AltanicPlayer
         public void getLength(out uint maxDuration)
         {
             maxDuration = (uint)curMusic.PlayLength;
-        }
-
-        public void Dispose()
-        {
-            curMusic.Stop();
         }
     }
 }

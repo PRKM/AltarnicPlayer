@@ -146,22 +146,29 @@ namespace AltanicPlayer
             if (musics != null)
             {
                 focusItem(MusicList.SelectedIndex);
-                mplay.PlayPause(PlayPause.Text, ref isGoing, curMusicPath);
+                mplay.PlayPause(PlayPause.Text, isGoing, curMusicPath);
                 if (!isGoing)
                 {
                     Stop.Enabled = true;
+                    isGoing = true;
                     PlayPause.Text = "||";
+                    setPositionBar();
                 }
                 else if (PlayPause.Text.Equals("▶"))
                 {
                     PlayPause.Text = "||";
+                    interrupt = false;
+                    moveBar = new Thread(new ThreadStart(movePositionBar));
+                    moveBar.Start();
                 }
                 else
                 {
                     PlayPause.Text = "▶";
+                    interrupt = true;
+                    moveBar.Abort();
                 }
                 Stop.Enabled = true;
-                setPositionBar();
+                
             }
         }
 
@@ -183,32 +190,21 @@ namespace AltanicPlayer
         {
             if (MusicList.SelectedItem != null)
             {
-                if (curMusicPath.Equals(MusicList.Items.IndexOf(MusicList.SelectedIndex)))
-                {
-                    if (isGoing)
-                    {
-                        mplay.Stop();
-                    }
-                    mplay.PlayPause(PlayPause.Text, ref isGoing, curMusicPath);
-
-                    Stop.Enabled = true;
-                    PlayPause.Text = "||";
-                    setPositionBar();
-                }
-                else
+                if (!curMusicPath.Equals(MusicList.Items.IndexOf(MusicList.SelectedIndex)))
                 {
                     focusItem(MusicList.SelectedIndex);
-                    if (isGoing)
-                    {
-                        mplay.Stop();
-                        isGoing = false;
-                    }
-                    mplay.PlayPause(PlayPause.Text, ref isGoing, curMusicPath);
-
-                    Stop.Enabled = true;
-                    PlayPause.Text = "||";
-                    setPositionBar();
                 }
+                if (isGoing)
+                {
+                    whenMusicWasEnd();
+                    moveBar.Abort();
+                }
+                mplay.PlayPause(PlayPause.Text, isGoing, curMusicPath);
+                isGoing = true;
+
+                Stop.Enabled = true;
+                PlayPause.Text = "||";
+                setPositionBar();
             }
         }
 
@@ -286,12 +282,10 @@ namespace AltanicPlayer
                         curPosition_Label.Text = hour_s + ":" + min_s + ":" + sec_s;
                     }
                 }
-                //if (interrupt)
-                //{
-                //    interrupt = true;
-                //    whenMusicWasEnd();
-                //    break;
-                //}
+                if (interrupt)
+                {
+                    break;
+                }
             }
             if (myPosition == maxDuration)
             {
@@ -312,10 +306,14 @@ namespace AltanicPlayer
             mplay.Stop();
         }
 
-        public new void Dispose()
+        private void AlPlayer_FormClosed(object sender, FormClosedEventArgs e)
         {
-            mplay.Stop();
-            moveBar.Join();
+            if (moveBar!=null)
+            {
+                mplay.Stop();
+                moveBar.Abort();
+                moveBar.Join();
+            }
         }
     }
 }
