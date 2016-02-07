@@ -53,5 +53,10 @@ namespace AltanicPlayer
         {
             maxDuration = (uint)curMusic.PlayLength;
         }
+
+        public void WhenScrolled(uint myPosition)
+        {
+            curMusic.PlayPosition = myPosition;
+        }
     }
 }

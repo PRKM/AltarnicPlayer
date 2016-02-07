@@ -101,6 +101,7 @@
             this.musicDuration.Size = new System.Drawing.Size(345, 45);
             this.musicDuration.TabIndex = 10;
             this.musicDuration.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.musicDuration.Scroll += new System.EventHandler(this.musicDuration_Scroll);
             // 
             // PlayPause
             // 

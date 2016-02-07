@@ -19,7 +19,6 @@ namespace AltanicPlayer
         Addlist addlist = new Addlist();
         Mplay mplay = new Mplay();
         Thread moveBar;
-        //노무현!!
         public List<string> musics = new List<string>();
         private bool isGoing = false;
         private bool interrupt;
@@ -206,6 +205,26 @@ namespace AltanicPlayer
                 PlayPause.Text = "||";
                 setPositionBar();
             }
+        }
+
+        private void musicDuration_Scroll(object sender, EventArgs e)
+        {
+            myPosition = (uint)musicDuration.Value;
+            int temp = musicDuration.Value;
+            string hour_s, min_s, sec_s;
+            hour_cur = temp / 360000; temp -= hour_cur * 360000; hour_s = hour_cur.ToString();
+            min_cur = temp / 60000; temp -= min_cur * 60000; min_s = min_cur.ToString();
+            sec_cur = temp / 1000; sec_s = sec_cur.ToString();
+
+            if (hour_cur < 10)
+                hour_s = hour_s.Insert(0, "0");
+            if (min_cur < 10)
+                min_s = min_s.Insert(0, "0");
+            if (sec_cur < 10)
+                sec_s = sec_s.Insert(0, "0");
+
+            curPosition_Label.Text = hour_s + ":" + min_s + ":" + sec_s;
+            mplay.WhenScrolled(myPosition);
         }
 
         private bool checkFormat(string format)
