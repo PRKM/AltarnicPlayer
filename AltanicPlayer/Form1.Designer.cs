@@ -43,7 +43,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.MusicList = new System.Windows.Forms.ListBox();
+            this.Volume = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadMusic
@@ -96,6 +98,7 @@
             // 
             // musicDuration
             // 
+            this.musicDuration.Enabled = false;
             this.musicDuration.Location = new System.Drawing.Point(113, 233);
             this.musicDuration.Name = "musicDuration";
             this.musicDuration.Size = new System.Drawing.Size(345, 45);
@@ -194,11 +197,22 @@
             this.MusicList.DragEnter += new System.Windows.Forms.DragEventHandler(this.MusicList_DragEnter);
             this.MusicList.DoubleClick += new System.EventHandler(this.MusicList_DoubleClick);
             // 
+            // Volume
+            // 
+            this.Volume.Location = new System.Drawing.Point(384, 137);
+            this.Volume.Maximum = 100;
+            this.Volume.Name = "Volume";
+            this.Volume.Size = new System.Drawing.Size(144, 45);
+            this.Volume.TabIndex = 14;
+            this.Volume.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.Volume.Scroll += new System.EventHandler(this.Volume_Scroll);
+            // 
             // AlPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(550, 259);
+            this.Controls.Add(this.Volume);
             this.Controls.Add(this.MusicList);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Duration_Label);
@@ -220,6 +234,7 @@
             this.Text = "Altanic Player";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AlPlayer_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Volume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -242,6 +257,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox MusicList;
+        private System.Windows.Forms.TrackBar Volume;
     }
 }
 

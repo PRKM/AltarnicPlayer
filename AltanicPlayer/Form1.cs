@@ -20,7 +20,7 @@ namespace AltanicPlayer
         Mplay mplay = new Mplay();
         Thread moveBar;
         public List<string> musics = new List<string>();
-        private bool isGoing = false;
+        private bool isGoing = false, first;
         private bool interrupt;
 
         uint maxDuration, myPosition, movenum = 0;
@@ -48,6 +48,13 @@ namespace AltanicPlayer
                     if (checkFormat(format) == true)
                     {
                         MusicList.Items.Add(muname);
+                    }
+                    if (!first)
+                    {
+                        mplay.setFirst(mupath);
+                        musicDuration.Enabled = true;
+                        setPositionBar();
+                        first = true;
                     }
                 }
                 PlayPause.Enabled = true;
@@ -100,6 +107,14 @@ namespace AltanicPlayer
                             musics.Add(mupath);
                             string muname = mupath.Substring(mupath.LastIndexOf('\\') + 1);
                             MusicList.Items.Add(muname);
+
+                            if (!first)
+                            {
+                                mplay.setFirst(mupath);
+                                musicDuration.Enabled = true;
+                                setPositionBar();
+                                first = true;
+                            }
                         }
                         PlayPause.Enabled = true;
 
@@ -128,6 +143,8 @@ namespace AltanicPlayer
                     MusicList.Items.RemoveAt(index);
                 }
             }
+            if (MusicList.Items == null)
+                first = false;
         }
 
         private void PlaylistBar_SelectedIndexChanged(object sender, EventArgs e)
@@ -203,6 +220,7 @@ namespace AltanicPlayer
 
                 Stop.Enabled = true;
                 PlayPause.Text = "||";
+                myPosition = 0;
                 setPositionBar();
             }
         }
@@ -225,6 +243,11 @@ namespace AltanicPlayer
 
             curPosition_Label.Text = hour_s + ":" + min_s + ":" + sec_s;
             mplay.WhenScrolled(myPosition);
+        }
+
+        private void Volume_Scroll(object sender, EventArgs e)
+        {
+            mplay.setVolume(Volume.Value);
         }
 
         private bool checkFormat(string format)
@@ -259,6 +282,11 @@ namespace AltanicPlayer
 
             musicDuration.Maximum = (int)maxDuration;
             Duration_Label.Text = hour_s + ":" + min_s + ":" + sec_s;
+
+            if (!first)
+            {
+                return;
+            }
 
             moveBar = new Thread(new ThreadStart(movePositionBar));
             moveBar.Start();

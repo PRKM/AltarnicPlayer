@@ -25,6 +25,12 @@ namespace AltanicPlayer
         IrrKlang.ISoundEngine player = new IrrKlang.ISoundEngine();
         IrrKlang.ISound curMusic;
 
+        public void setFirst(string mupath)
+        {
+            curMusic = player.Play2D(mupath);
+            Stop();
+        }
+
         public void PlayPause(string Mode, bool isGoing, string curMusicPath)
         {
             if (!isGoing)
@@ -57,6 +63,15 @@ namespace AltanicPlayer
         public void WhenScrolled(uint myPosition)
         {
             curMusic.PlayPosition = myPosition;
+        }
+
+        public void setVolume(int value)
+        {
+            if (curMusic != null)
+            {
+                float vol = value / 100f;
+                curMusic.Volume = vol;
+            }
         }
     }
 }
