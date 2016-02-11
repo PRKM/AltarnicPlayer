@@ -28,6 +28,15 @@ namespace AltanicPlayer
         public void setFirst(string mupath)
         {
             curMusic = player.Play2D(mupath);
+            curMusic.Volume = 0.5f;
+            Stop();
+        }
+
+        public void setFirst(string mupath, bool isGoing)
+        {
+            if (isGoing)
+                Stop();
+            curMusic = player.Play2D(mupath);
             Stop();
         }
 
@@ -53,6 +62,11 @@ namespace AltanicPlayer
         public void Stop()
         {
             curMusic.Stop();
+        }
+
+        public void getnext(string mupath)
+        {
+            curMusic = player.Play2D(mupath);
         }
 
         public void getLength(out uint maxDuration)

@@ -36,16 +36,20 @@
             this.musicDuration = new System.Windows.Forms.TrackBar();
             this.PlayPause = new System.Windows.Forms.Button();
             this.Prev = new System.Windows.Forms.Button();
-            this.Next = new System.Windows.Forms.Button();
             this.Stop = new System.Windows.Forms.Button();
             this.curPosition_Label = new System.Windows.Forms.Label();
             this.Duration_Label = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.MusicList = new System.Windows.Forms.ListBox();
             this.Volume = new System.Windows.Forms.TrackBar();
+            this.Mute = new System.Windows.Forms.PictureBox();
+            this.Next = new System.Windows.Forms.Button();
+            this.Loop = new System.Windows.Forms.PictureBox();
+            this.MusicList = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Mute)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Loop)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadMusic
@@ -99,7 +103,7 @@
             // musicDuration
             // 
             this.musicDuration.Enabled = false;
-            this.musicDuration.Location = new System.Drawing.Point(113, 233);
+            this.musicDuration.Location = new System.Drawing.Point(112, 251);
             this.musicDuration.Name = "musicDuration";
             this.musicDuration.Size = new System.Drawing.Size(345, 45);
             this.musicDuration.TabIndex = 10;
@@ -109,7 +113,7 @@
             // PlayPause
             // 
             this.PlayPause.Enabled = false;
-            this.PlayPause.Location = new System.Drawing.Point(229, 167);
+            this.PlayPause.Location = new System.Drawing.Point(228, 185);
             this.PlayPause.Name = "PlayPause";
             this.PlayPause.Size = new System.Drawing.Size(58, 48);
             this.PlayPause.TabIndex = 6;
@@ -119,7 +123,7 @@
             // 
             // Prev
             // 
-            this.Prev.Location = new System.Drawing.Point(174, 175);
+            this.Prev.Location = new System.Drawing.Point(173, 193);
             this.Prev.Name = "Prev";
             this.Prev.Size = new System.Drawing.Size(40, 33);
             this.Prev.TabIndex = 8;
@@ -127,19 +131,10 @@
             this.Prev.UseVisualStyleBackColor = true;
             this.Prev.Click += new System.EventHandler(this.Prev_Click);
             // 
-            // Next
-            // 
-            this.Next.Location = new System.Drawing.Point(359, 175);
-            this.Next.Name = "Next";
-            this.Next.Size = new System.Drawing.Size(40, 33);
-            this.Next.TabIndex = 9;
-            this.Next.Text = ">>";
-            this.Next.UseVisualStyleBackColor = true;
-            // 
             // Stop
             // 
             this.Stop.Enabled = false;
-            this.Stop.Location = new System.Drawing.Point(299, 171);
+            this.Stop.Location = new System.Drawing.Point(298, 189);
             this.Stop.Name = "Stop";
             this.Stop.Size = new System.Drawing.Size(49, 40);
             this.Stop.TabIndex = 7;
@@ -150,7 +145,7 @@
             // curPosition_Label
             // 
             this.curPosition_Label.AutoSize = true;
-            this.curPosition_Label.Location = new System.Drawing.Point(327, 220);
+            this.curPosition_Label.Location = new System.Drawing.Point(326, 238);
             this.curPosition_Label.Name = "curPosition_Label";
             this.curPosition_Label.Size = new System.Drawing.Size(49, 12);
             this.curPosition_Label.TabIndex = 12;
@@ -159,7 +154,7 @@
             // Duration_Label
             // 
             this.Duration_Label.AutoSize = true;
-            this.Duration_Label.Location = new System.Drawing.Point(402, 220);
+            this.Duration_Label.Location = new System.Drawing.Point(401, 238);
             this.Duration_Label.Name = "Duration_Label";
             this.Duration_Label.Size = new System.Drawing.Size(49, 12);
             this.Duration_Label.TabIndex = 12;
@@ -168,7 +163,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(382, 220);
+            this.label1.Location = new System.Drawing.Point(381, 238);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(11, 12);
             this.label1.TabIndex = 12;
@@ -176,49 +171,81 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(11, 224);
+            this.button2.Location = new System.Drawing.Point(11, 250);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 11;
             this.button2.Text = "lyrics";
             this.button2.UseVisualStyleBackColor = true;
             // 
+            // Volume
+            // 
+            this.Volume.Location = new System.Drawing.Point(52, 200);
+            this.Volume.Maximum = 100;
+            this.Volume.Name = "Volume";
+            this.Volume.Size = new System.Drawing.Size(101, 45);
+            this.Volume.TabIndex = 14;
+            this.Volume.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.Volume.Value = 50;
+            this.Volume.Scroll += new System.EventHandler(this.Volume_Scroll);
+            // 
+            // Mute
+            // 
+            this.Mute.Image = global::AltanicPlayer.Properties.Resources.sound;
+            this.Mute.Location = new System.Drawing.Point(27, 201);
+            this.Mute.Name = "Mute";
+            this.Mute.Size = new System.Drawing.Size(20, 20);
+            this.Mute.TabIndex = 15;
+            this.Mute.TabStop = false;
+            this.Mute.Click += new System.EventHandler(this.Mute_Click);
+            // 
+            // Next
+            // 
+            this.Next.Location = new System.Drawing.Point(363, 193);
+            this.Next.Name = "Next";
+            this.Next.Size = new System.Drawing.Size(40, 33);
+            this.Next.TabIndex = 8;
+            this.Next.Text = " >>";
+            this.Next.UseVisualStyleBackColor = true;
+            this.Next.Click += new System.EventHandler(this.Next_Click);
+            // 
+            // Loop
+            // 
+            this.Loop.Image = global::AltanicPlayer.Properties.Resources.non_repeat;
+            this.Loop.Location = new System.Drawing.Point(463, 251);
+            this.Loop.Name = "Loop";
+            this.Loop.Size = new System.Drawing.Size(20, 20);
+            this.Loop.TabIndex = 16;
+            this.Loop.TabStop = false;
+            this.Loop.Click += new System.EventHandler(this.Loop_Click);
+            // 
             // MusicList
             // 
-            this.MusicList.AllowDrop = true;
             this.MusicList.FormattingEnabled = true;
             this.MusicList.ItemHeight = 12;
-            this.MusicList.Location = new System.Drawing.Point(11, 9);
+            this.MusicList.Location = new System.Drawing.Point(11, 7);
             this.MusicList.Name = "MusicList";
             this.MusicList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.MusicList.Size = new System.Drawing.Size(354, 124);
-            this.MusicList.TabIndex = 13;
+            this.MusicList.TabIndex = 18;
             this.MusicList.DragDrop += new System.Windows.Forms.DragEventHandler(this.MusicList_DragDrop);
             this.MusicList.DragEnter += new System.Windows.Forms.DragEventHandler(this.MusicList_DragEnter);
             this.MusicList.DoubleClick += new System.EventHandler(this.MusicList_DoubleClick);
-            // 
-            // Volume
-            // 
-            this.Volume.Location = new System.Drawing.Point(384, 137);
-            this.Volume.Maximum = 100;
-            this.Volume.Name = "Volume";
-            this.Volume.Size = new System.Drawing.Size(144, 45);
-            this.Volume.TabIndex = 14;
-            this.Volume.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.Volume.Scroll += new System.EventHandler(this.Volume_Scroll);
             // 
             // AlPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(550, 259);
-            this.Controls.Add(this.Volume);
+            this.ClientSize = new System.Drawing.Size(550, 286);
             this.Controls.Add(this.MusicList);
+            this.Controls.Add(this.Loop);
+            this.Controls.Add(this.Next);
+            this.Controls.Add(this.Mute);
+            this.Controls.Add(this.Volume);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Duration_Label);
             this.Controls.Add(this.curPosition_Label);
             this.Controls.Add(this.Stop);
-            this.Controls.Add(this.Next);
             this.Controls.Add(this.Prev);
             this.Controls.Add(this.PlayPause);
             this.Controls.Add(this.musicDuration);
@@ -235,6 +262,8 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AlPlayer_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Volume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Mute)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Loop)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -250,14 +279,16 @@
         private System.Windows.Forms.TrackBar musicDuration;
         private System.Windows.Forms.Button PlayPause;
         private System.Windows.Forms.Button Prev;
-        private System.Windows.Forms.Button Next;
         private System.Windows.Forms.Button Stop;
         private System.Windows.Forms.Label curPosition_Label;
         private System.Windows.Forms.Label Duration_Label;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ListBox MusicList;
         private System.Windows.Forms.TrackBar Volume;
+        private System.Windows.Forms.PictureBox Mute;
+        private System.Windows.Forms.Button Next;
+        private System.Windows.Forms.PictureBox Loop;
+        private System.Windows.Forms.ListBox MusicList;
     }
 }
 
