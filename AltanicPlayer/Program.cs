@@ -24,11 +24,12 @@ namespace AltanicPlayer
     {
         IrrKlang.ISoundEngine player = new IrrKlang.ISoundEngine();
         IrrKlang.ISound curMusic;
+        TagLib.File finfo;
+        float curVol = 0.5f;
 
         public void setFirst(string mupath)
         {
             curMusic = player.Play2D(mupath);
-            curMusic.Volume = 0.5f;
             Stop();
         }
 
@@ -45,6 +46,7 @@ namespace AltanicPlayer
             if (!isGoing)
             {
                 curMusic = player.Play2D(curMusicPath);
+                curMusic.Volume = curVol;
             }
             else
             {
@@ -86,6 +88,54 @@ namespace AltanicPlayer
                 float vol = value / 100f;
                 curMusic.Volume = vol;
             }
+        }
+
+        public string[] getInfo(string mupath)
+        { // 목록에 아무것도 없는 상태에서 음악 로드시
+          // 플레이하던 곡이 끝날 때
+          // 곡 선택시
+            string[] Info = new string[3];
+            string artists = "";
+            finfo = TagLib.File.Create(mupath);
+
+            if (finfo.Tag.Title != null)
+                Info[0] = finfo.Tag.Title;
+            else
+            {
+                string mName = mupath.Substring(mupath.LastIndexOf("\\") + 1);
+                Info[0] = mName;
+            }
+
+            if (finfo.Tag.Artists.Length != 0)
+            {
+                foreach (string artist in finfo.Tag.Artists)
+                {
+                    artists = artists + artist + ", ";
+                }
+                artists = artists.Substring(0, artists.LastIndexOf(","));
+                Info[1] = artists;
+            }
+            else
+                Info[1] = "(none)";
+
+            if (finfo.Tag.Album != null)
+                Info[2] = finfo.Tag.Album;
+            else
+                Info[2] = "(none)";
+
+            return Info;
+        }
+
+        public System.Drawing.Image getImg()
+        {
+            if (finfo.Tag.Pictures.Length != 0)
+            {
+                System.IO.MemoryStream getImg = new System.IO.MemoryStream(finfo.Tag.Pictures[0].Data.Data);
+                System.Drawing.Image albimg = System.Drawing.Image.FromStream(getImg);
+
+                return albimg;
+            }
+            return null;
         }
     }
 }

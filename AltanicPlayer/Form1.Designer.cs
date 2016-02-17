@@ -42,14 +42,24 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.Volume = new System.Windows.Forms.TrackBar();
-            this.Mute = new System.Windows.Forms.PictureBox();
             this.Next = new System.Windows.Forms.Button();
-            this.Loop = new System.Windows.Forms.PictureBox();
             this.MusicList = new System.Windows.Forms.ListBox();
+            this.Loop = new System.Windows.Forms.PictureBox();
+            this.Mute = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.Album = new System.Windows.Forms.Label();
+            this.moveTitle = new System.Windows.Forms.HScrollBar();
+            this.AlbumImage = new System.Windows.Forms.PictureBox();
+            this.Artist = new System.Windows.Forms.Label();
+            this.MusicTitle = new System.Windows.Forms.Label();
+            this.moveArtist = new System.Windows.Forms.HScrollBar();
+            this.moveAlbum = new System.Windows.Forms.HScrollBar();
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Mute)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Loop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Mute)).BeginInit();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AlbumImage)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadMusic
@@ -189,16 +199,6 @@
             this.Volume.Value = 50;
             this.Volume.Scroll += new System.EventHandler(this.Volume_Scroll);
             // 
-            // Mute
-            // 
-            this.Mute.Image = global::AltanicPlayer.Properties.Resources.sound;
-            this.Mute.Location = new System.Drawing.Point(27, 201);
-            this.Mute.Name = "Mute";
-            this.Mute.Size = new System.Drawing.Size(20, 20);
-            this.Mute.TabIndex = 15;
-            this.Mute.TabStop = false;
-            this.Mute.Click += new System.EventHandler(this.Mute_Click);
-            // 
             // Next
             // 
             this.Next.Location = new System.Drawing.Point(363, 193);
@@ -208,16 +208,6 @@
             this.Next.Text = " >>";
             this.Next.UseVisualStyleBackColor = true;
             this.Next.Click += new System.EventHandler(this.Next_Click);
-            // 
-            // Loop
-            // 
-            this.Loop.Image = global::AltanicPlayer.Properties.Resources.non_repeat;
-            this.Loop.Location = new System.Drawing.Point(463, 251);
-            this.Loop.Name = "Loop";
-            this.Loop.Size = new System.Drawing.Size(20, 20);
-            this.Loop.TabIndex = 16;
-            this.Loop.TabStop = false;
-            this.Loop.Click += new System.EventHandler(this.Loop_Click);
             // 
             // MusicList
             // 
@@ -232,11 +222,113 @@
             this.MusicList.DragEnter += new System.Windows.Forms.DragEventHandler(this.MusicList_DragEnter);
             this.MusicList.DoubleClick += new System.EventHandler(this.MusicList_DoubleClick);
             // 
+            // Loop
+            // 
+            this.Loop.Image = global::AltanicPlayer.Properties.Resources.non_repeat;
+            this.Loop.Location = new System.Drawing.Point(463, 251);
+            this.Loop.Name = "Loop";
+            this.Loop.Size = new System.Drawing.Size(20, 20);
+            this.Loop.TabIndex = 16;
+            this.Loop.TabStop = false;
+            this.Loop.Click += new System.EventHandler(this.Loop_Click);
+            // 
+            // Mute
+            // 
+            this.Mute.Image = global::AltanicPlayer.Properties.Resources.sound;
+            this.Mute.Location = new System.Drawing.Point(27, 201);
+            this.Mute.Name = "Mute";
+            this.Mute.Size = new System.Drawing.Size(20, 20);
+            this.Mute.TabIndex = 15;
+            this.Mute.TabStop = false;
+            this.Mute.Click += new System.EventHandler(this.Mute_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.Album);
+            this.panel1.Controls.Add(this.moveTitle);
+            this.panel1.Controls.Add(this.AlbumImage);
+            this.panel1.Controls.Add(this.Artist);
+            this.panel1.Controls.Add(this.MusicTitle);
+            this.panel1.Location = new System.Drawing.Point(403, 7);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(110, 172);
+            this.panel1.TabIndex = 22;
+            // 
+            // Album
+            // 
+            this.Album.AutoSize = true;
+            this.Album.Location = new System.Drawing.Point(-3, 2);
+            this.Album.Name = "Album";
+            this.Album.Size = new System.Drawing.Size(43, 12);
+            this.Album.TabIndex = 22;
+            this.Album.Text = "(none)";
+            this.Album.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // moveTitle
+            // 
+            this.moveTitle.Enabled = false;
+            this.moveTitle.Location = new System.Drawing.Point(-2, 155);
+            this.moveTitle.Name = "moveTitle";
+            this.moveTitle.Size = new System.Drawing.Size(112, 15);
+            this.moveTitle.TabIndex = 26;
+            this.moveTitle.Visible = false;
+            // 
+            // AlbumImage
+            // 
+            this.AlbumImage.ErrorImage = global::AltanicPlayer.Properties.Resources.no_Image1;
+            this.AlbumImage.Image = global::AltanicPlayer.Properties.Resources.no_Image1;
+            this.AlbumImage.Location = new System.Drawing.Point(-1, 15);
+            this.AlbumImage.Name = "AlbumImage";
+            this.AlbumImage.Size = new System.Drawing.Size(110, 110);
+            this.AlbumImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.AlbumImage.TabIndex = 25;
+            this.AlbumImage.TabStop = false;
+            // 
+            // Artist
+            // 
+            this.Artist.AutoSize = true;
+            this.Artist.Location = new System.Drawing.Point(-3, 142);
+            this.Artist.Name = "Artist";
+            this.Artist.Size = new System.Drawing.Size(43, 12);
+            this.Artist.TabIndex = 23;
+            this.Artist.Text = "(none)";
+            this.Artist.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MusicTitle
+            // 
+            this.MusicTitle.AutoSize = true;
+            this.MusicTitle.Location = new System.Drawing.Point(-3, 128);
+            this.MusicTitle.Name = "MusicTitle";
+            this.MusicTitle.Size = new System.Drawing.Size(43, 12);
+            this.MusicTitle.TabIndex = 24;
+            this.MusicTitle.Text = "(none)";
+            this.MusicTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // moveArtist
+            // 
+            this.moveArtist.Enabled = false;
+            this.moveArtist.Location = new System.Drawing.Point(401, 177);
+            this.moveArtist.Name = "moveArtist";
+            this.moveArtist.Size = new System.Drawing.Size(112, 13);
+            this.moveArtist.TabIndex = 23;
+            this.moveArtist.Visible = false;
+            // 
+            // moveAlbum
+            // 
+            this.moveAlbum.Enabled = false;
+            this.moveAlbum.Location = new System.Drawing.Point(401, 189);
+            this.moveAlbum.Name = "moveAlbum";
+            this.moveAlbum.Size = new System.Drawing.Size(112, 13);
+            this.moveAlbum.TabIndex = 23;
+            this.moveAlbum.Visible = false;
+            // 
             // AlPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(550, 286);
+            this.Controls.Add(this.moveAlbum);
+            this.Controls.Add(this.moveArtist);
             this.Controls.Add(this.MusicList);
             this.Controls.Add(this.Loop);
             this.Controls.Add(this.Next);
@@ -255,6 +347,7 @@
             this.Controls.Add(this.PlaylistBar);
             this.Controls.Add(this.DelMusic);
             this.Controls.Add(this.LoadMusic);
+            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "AlPlayer";
@@ -262,8 +355,11 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AlPlayer_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.musicDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Volume)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Mute)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Loop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Mute)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AlbumImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -289,6 +385,14 @@
         private System.Windows.Forms.Button Next;
         private System.Windows.Forms.PictureBox Loop;
         private System.Windows.Forms.ListBox MusicList;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label Album;
+        private System.Windows.Forms.HScrollBar moveTitle;
+        private System.Windows.Forms.PictureBox AlbumImage;
+        private System.Windows.Forms.Label Artist;
+        private System.Windows.Forms.Label MusicTitle;
+        private System.Windows.Forms.HScrollBar moveArtist;
+        private System.Windows.Forms.HScrollBar moveAlbum;
     }
 }
 
