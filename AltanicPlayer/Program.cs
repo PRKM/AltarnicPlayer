@@ -78,7 +78,9 @@ namespace AltanicPlayer
 
         public void WhenScrolled(uint myPosition)
         {
+            curMusic.Paused = true;
             curMusic.PlayPosition = myPosition;
+            curMusic.Paused = false;
         }
 
         public void setVolume(int value)
@@ -86,7 +88,8 @@ namespace AltanicPlayer
             if (curMusic != null)
             {
                 float vol = value / 100f;
-                curMusic.Volume = vol;
+                curVol = vol;
+                curMusic.Volume = curVol;
             }
         }
 

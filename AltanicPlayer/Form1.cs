@@ -16,14 +16,19 @@ namespace AltanicPlayer
 {
     public partial class AlPlayer : Form
     {
-        Addlist addlist = new Addlist();
+        Addlist playList = new Addlist();
         Mplay mplay = new Mplay();
         Thread moveBar, longTitle, longArtist, longAlbum;
+        StreamReader settings_r, seList_r;
+        StreamWriter settings_w, seList_w; // 설정, 선택 목록
+        FileStream mkFile, opFile; // 만들기용, 열기용
+
+        string defpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Alplayer";
 
         //아래 멤버 변수들은 차후에 파일 다룰 때에 저장된 것을 기반으로 설정될 것임.
 
         public List<string> musics = new List<string>();
-        private bool isGoing = false, first = false, ismuted = false, start = false;
+        private bool isGoing = false, first = false, ismuted = false, start = false; // 정지여부, 최초로 로드 여부, 음소거여부, 최초 재생여부
         private bool interrupt;
 
         uint maxDuration, myPosition, movenum = 0;
@@ -32,12 +37,13 @@ namespace AltanicPlayer
         int curVol = 50;
         int loopMode = 0;
 
-        string curMusicPath, curMname;
+        string curMusicPath, curMname, curList = "(default)";
 
         public AlPlayer()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+            setBasic();
         }
 
         private void MusicList_DragDrop(object sender, DragEventArgs e)
@@ -49,10 +55,12 @@ namespace AltanicPlayer
                 {
                     string muname = mupath.Substring(mupath.LastIndexOf('\\') + 1); // 파일명 추출
                     string format = muname.Substring(muname.LastIndexOf('.')); // 파일 형식 추출
+                    seList_w = new StreamWriter(defpath + "\\Lists\\" + curList + ".alp");
                     if (checkFormat(format) == true)
                     {
                         musics.Add(mupath);
                         MusicList.Items.Add(muname);
+                        seList_w.WriteLine(mupath);
                     }
                     if (!first)
                     {
@@ -67,6 +75,7 @@ namespace AltanicPlayer
                             AlbumImage.Image = AlbumImage.ErrorImage;
                     }
                 }
+                seList_w.Close();
                 PlayPause.Enabled = true;
 
                 MusicList.SelectedIndex = 0;
@@ -112,11 +121,13 @@ namespace AltanicPlayer
                     try
                     {
                         string[] copy = openMusic.FileNames;
+                        seList_w = new StreamWriter(defpath + "\\Lists\\" + curList + ".alp");
                         foreach (string mupath in openMusic.FileNames)
                         {
                             musics.Add(mupath);
                             string muname = mupath.Substring(mupath.LastIndexOf('\\') + 1);
                             MusicList.Items.Add(muname);
+                            seList_w.WriteLine(mupath);
 
                             if (!first)
                             {
@@ -130,7 +141,9 @@ namespace AltanicPlayer
                                 else
                                     AlbumImage.Image = AlbumImage.ErrorImage;
                             }
+
                         }
+                        seList_w.Close();
                         PlayPause.Enabled = true;
 
                         MusicList.SelectedIndex = 0;
@@ -155,7 +168,7 @@ namespace AltanicPlayer
             {
                 for (int x = MusicList.SelectedIndices.Count - 1; x >= 0; x--)
                 {
-                    if (MusicList.SelectedItems[x].ToString().Substring(1).Equals(curMname))
+                    if ((MusicList.SelectedItems[x].ToString().Substring(1).Equals(curMname))||(MusicList.SelectedItems[x].ToString().Equals(curMname)))
                     {
                         swich = true;
                         PlayPause.Text = "▶";
@@ -164,7 +177,11 @@ namespace AltanicPlayer
                         isGoing = false;
                         first = false;
                         mplay.Stop();
-                        moveBar.Abort();
+                        if (moveBar != null)
+                        {
+                            moveBar.Abort();
+                            moveBar = null;
+                        }
                         if (longTitle != null)
                         {
                             longTitle.Abort();
@@ -193,7 +210,7 @@ namespace AltanicPlayer
                 }
                 if (swich)
                 {
-                    if (MusicList.Items != null)
+                    if (MusicList.Items.Count > 0)
                     {
                         MusicList.SelectedIndex = 0;
                         focusItem(0);
@@ -203,6 +220,8 @@ namespace AltanicPlayer
                         showInfo(curMusicPath);
                         if (mplay.getImg() != null)
                             AlbumImage.Image = mplay.getImg();
+                        else
+                            AlbumImage.Image = AlbumImage.ErrorImage;
                         first = true;
                     }
                 }
@@ -210,6 +229,7 @@ namespace AltanicPlayer
             if (MusicList.Items.Count == 0)
             {
                 start = false;
+                first = false;
                 curMusicPath = null;
                 curMname = null;
                 MusicTitle.Text = "(none)";
@@ -221,7 +241,78 @@ namespace AltanicPlayer
 
         private void PlaylistBar_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string listname = MusicList.SelectedItem.ToString();
+            if (isGoing)
+            {
+                isGoing = false;
+                mplay.Stop();
+                moveBar.Abort();
+            }
+            curList = PlaylistBar.SelectedItem.ToString();
+            musics.Clear();
+            MusicList.Items.Clear();
+            PlayPause.Text = "▶";
+            PlayPause.Enabled = false;
+            Stop.Enabled = false;
+            musicDuration.Value = 0;
+            myPosition = 0;
+            movenum = 0;
+            hour_cur = 0; min_cur = 0; sec_cur = 0;
+            curPosition_Label.Text = "00:00:00";
+            Duration_Label.Text = "00:00:00";
+            MusicTitle.Text = "(none)";
+            Album.Text = "(none)";
+            Artist.Text = "(none)";
+            AlbumImage.Image = AlbumImage.ErrorImage;
+            curMusicPath = null;
+            curMname = null;
+            start = false;
+            if (moveBar != null)
+            {
+                moveBar.Abort();
+                moveBar = null;
+            }
+            if (longTitle != null)
+            {
+                longTitle.Abort();
+                longTitle = null;
+                var loc = MusicTitle.Location;
+                loc.X = -3;
+                loc.Y = 128;
+                MusicTitle.Location = loc;
+            }
+            if (longArtist != null)
+            {
+                longArtist.Abort();
+                longArtist = null;
+                var loc = Artist.Location;
+                loc.X = -3;
+                loc.Y = 142;
+                Artist.Location = loc;
+            }
+            if (longAlbum != null)
+            {
+                longAlbum.Abort();
+                longAlbum = null;
+                var loc = Album.Location;
+                loc.X = -3;
+                loc.Y = 2;
+                Album.Location = loc;
+            }
+            setMusicLIst(curList);
+            if (MusicList.Items.Count != 0)
+            {
+                focusItem(0);
+                MusicList.Items[musics.IndexOf(curMusicPath)] = MusicList.Items[musics.IndexOf(curMusicPath)].ToString().Insert(0, "*");
+                start = true;
+                showInfo(curMusicPath);
+                if (mplay.getImg() != null)
+                    AlbumImage.Image = mplay.getImg();
+                else
+                    AlbumImage.Image = AlbumImage.ErrorImage;
+                PlayPause.Enabled = true;
+                //first = true;
+                //start = true;
+            }
         }
 
         private void Prev_Click(object sender, EventArgs e)
@@ -281,13 +372,17 @@ namespace AltanicPlayer
         {
             if (MusicList.Items.Count!=0)
             {
-                if(!start)
+                if(!start) // 정지하고 다시 재생했을때 별표가 중복해서 증가하지 않도록 하기!!!!
                 {
                     start = true;
-                    focusItem(MusicList.SelectedIndex);
-                    MusicList.Items[musics.IndexOf(curMusicPath)] = MusicList.Items[musics.IndexOf(curMusicPath)].ToString().Insert(0, "*");
                 }
-                
+                else
+                {
+                    MusicList.Items[musics.IndexOf(curMusicPath)] = MusicList.Items[musics.IndexOf(curMusicPath)].ToString().Substring(1);
+                }
+                focusItem(musics.IndexOf(curMusicPath));
+                MusicList.Items[musics.IndexOf(curMusicPath)] = MusicList.Items[musics.IndexOf(curMusicPath)].ToString().Insert(0, "*");
+
                 mplay.PlayPause(PlayPause.Text, isGoing, curMusicPath);
                 
                 if (!isGoing)
@@ -466,6 +561,94 @@ namespace AltanicPlayer
             }
         }
 
+        private void Del_Click(object sender, EventArgs e)
+        {
+            if (isGoing)
+            {
+                mplay.Stop();
+                moveBar.Abort();
+            }
+            if (PlaylistBar.SelectedIndex == 0)
+                MessageBox.Show("기본 목록은 삭제할 수 없습니다.");
+            else
+            {
+                DialogResult confirm = MessageBox.Show("정말로 삭제하시겠습니까?", "삭제 확인", MessageBoxButtons.OKCancel);
+                if (confirm == DialogResult.OK)
+                {
+                    PlaylistBar.Items.RemoveAt(PlaylistBar.SelectedIndex);
+                    File.Delete(defpath + "\\Lists\\" + curList + ".alp");
+                    PlaylistBar.SelectedIndex = 0;
+                    curList = "(default)";
+                    musics.Clear();
+                    MusicList.Items.Clear();
+                    setMusicLIst(curList);
+                    MusicTitle.Text = "(none)";
+                    Album.Text = "(none)";
+                    Artist.Text = "(none)";
+                    AlbumImage.Image = AlbumImage.ErrorImage;
+                    PlayPause.Text = "▶";
+                    PlayPause.Enabled = false;
+                    Stop.Enabled = false;
+                    start = false;
+                    isGoing = false;
+                    first = false;
+                    if (moveBar != null)
+                    {
+                        moveBar.Abort();
+                        moveBar = null;
+                    }
+                    if (longTitle != null)
+                    {
+                        longTitle.Abort();
+                        longTitle = null;
+                        var loc = MusicTitle.Location;
+                        loc.X = -3;
+                        loc.Y = 128;
+                        MusicTitle.Location = loc;
+                    }
+                    if (longArtist != null)
+                    {
+                        longArtist.Abort();
+                        longArtist = null;
+                        var loc = Artist.Location;
+                        loc.X = -3;
+                        loc.Y = 142;
+                        Artist.Location = loc;
+                    }
+                    if (longAlbum != null)
+                    {
+                        longAlbum.Abort();
+                        longAlbum = null;
+                        var loc = Album.Location;
+                        loc.X = -3;
+                        loc.Y = 2;
+                        Album.Location = loc;
+                    }
+                    musicDuration.Value = 0;
+                    myPosition = 0;
+                    movenum = 0;
+                    hour_cur = 0; min_cur = 0; sec_cur = 0;
+                    curPosition_Label.Text = "00:00:00";
+                    Duration_Label.Text = "00:00:00";
+                    if (MusicList.Items.Count != 0)
+                    {
+                        focusItem(0);
+                        MusicList.Items[musics.IndexOf(curMusicPath)] = MusicList.Items[musics.IndexOf(curMusicPath)].ToString().Insert(0, "*");
+                        start = true;
+                        showInfo(curMusicPath);
+                        if (mplay.getImg() != null)
+                            AlbumImage.Image = mplay.getImg();
+                        else
+                            AlbumImage.Image = AlbumImage.ErrorImage;
+                        setPositionBar();
+                        PlayPause.Enabled = true;
+                        //first = true;
+                        //start = true;
+                    }
+                }
+            }
+        }
+
         private void Loop_Click(object sender, EventArgs e)
         {
             switch (loopMode)
@@ -482,6 +665,77 @@ namespace AltanicPlayer
                     Loop.Image = Image.FromFile(@"..\..\Images\non-repeat.png");
                     loopMode = 0;
                     break;
+            }
+        }
+
+        private void Add_Click(object sender, EventArgs e)
+        {
+            playList.ShowDialog();
+
+            if ((!playList.toadd.Equals("")) && (playList.toadd != null))
+            {
+                curList = playList.toadd;
+                if (isGoing)
+                {
+                    mplay.Stop();
+                    moveBar.Abort();
+                }
+                mkFile = File.Open(defpath + "\\Lists\\" + curList + ".alp", FileMode.Create);
+                mkFile.Close();
+                PlaylistBar.Items.Add(curList);
+                PlaylistBar.SelectedIndex = PlaylistBar.Items.IndexOf(curList);
+                musics.Clear();
+                MusicList.Items.Clear();
+                curMusicPath = null;
+                curMname = null;
+                first = false;
+                start = false;
+                isGoing = false;
+                MusicTitle.Text = "(none)";
+                Album.Text = "(none)";
+                Artist.Text = "(none)";
+                AlbumImage.Image = AlbumImage.ErrorImage;
+                if (moveBar != null)
+                {
+                    moveBar.Abort();
+                    moveBar = null;
+                }
+                if (longTitle != null)
+                {
+                    longTitle.Abort();
+                    longTitle = null;
+                    var loc = MusicTitle.Location;
+                    loc.X = -3;
+                    loc.Y = 128;
+                    MusicTitle.Location = loc;
+                }
+                if (longArtist != null)
+                {
+                    longArtist.Abort();
+                    longArtist = null;
+                    var loc = Artist.Location;
+                    loc.X = -3;
+                    loc.Y = 142;
+                    Artist.Location = loc;
+                }
+                if (longAlbum != null)
+                {
+                    longAlbum.Abort();
+                    longAlbum = null;
+                    var loc = Album.Location;
+                    loc.X = -3;
+                    loc.Y = 2;
+                    Album.Location = loc;
+                }
+                musicDuration.Value = 0;
+                myPosition = 0;
+                movenum = 0;
+                hour_cur = 0; min_cur = 0; sec_cur = 0;
+                curPosition_Label.Text = "00:00:00";
+                Duration_Label.Text = "00:00:00";
+                PlayPause.Text = "▶";
+                PlayPause.Enabled = false;
+                Stop.Enabled = false;
             }
         }
 
@@ -707,16 +961,6 @@ namespace AltanicPlayer
             setPositionBar();
         }
 
-        private void AlPlayer_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (moveBar!=null)
-            {
-                mplay.Stop();
-                moveBar.Abort();
-                moveBar.Join();
-            }
-        }
-
         private void showInfo(string mupath)
         {
             string[] Info = new string[3];
@@ -767,17 +1011,20 @@ namespace AltanicPlayer
                 {
                     Thread.Sleep(1900);
                 }
-                moveTitle.Value++;
                 var loc = MusicTitle.Location;
-                loc.Y = MusicTitle.Location.Y;
-                loc.X = -moveTitle.Value;
-                MusicTitle.Location = loc;
                 if (moveTitle.Value == moveTitle.Maximum - 10)
                 {
                     Thread.Sleep(2000);
                     moveTitle.Value = 0;
                     loc.X = -3;
                     loc.Y = 128;
+                    MusicTitle.Location = loc;
+                }
+                else
+                {
+                    moveTitle.Value++;
+                    loc.Y = MusicTitle.Location.Y;
+                    loc.X = -moveTitle.Value;
                     MusicTitle.Location = loc;
                 }
             }
@@ -831,6 +1078,237 @@ namespace AltanicPlayer
                     Album.Location = loc;
                 }
             }
+        }
+
+        private void setBasic()
+        {
+            string list;
+            int selected, vol;
+            bool isplaying;
+            if (!Directory.Exists(defpath)) // 폴더 만들기
+            {
+                Directory.CreateDirectory(defpath);
+            }
+            if (File.Exists(defpath + "\\setting.jyh")) // 설정 파일 여부
+            {
+                opFile = File.Open(defpath + "\\setting.jyh", FileMode.Open, FileAccess.ReadWrite);
+                if (opFile.Length == 0) // 누락시
+                {
+                    opFile.Close();
+                    settings_w = new StreamWriter(defpath + "\\setting.jyh");
+                    settings_w.WriteLine("List = (default)");
+                    settings_w.WriteLine("Selected = -1");
+                    settings_w.WriteLine("Volume = 50");
+                    settings_w.WriteLine("position = 0");
+                    settings_w.WriteLine("isPlaying = false");
+
+                    settings_w.Close();
+
+                    setList("(default)");
+                }
+                else // 설정된 값으로 바꿔주기
+                {
+                    int index = 0;
+                    opFile.Close();
+                    settings_r = new StreamReader(defpath + "\\setting.jyh");
+                    while (index <= 4)
+                    {
+                        string temp;
+                        object value;
+                        temp = settings_r.ReadLine();
+                        switch (index)
+                        {
+                            case 0:
+                                list = temp.Substring(temp.LastIndexOf("=") + 2);
+                                curList = list;
+                                setList(curList);
+                                break;
+                            case 1:
+                                selected = int.Parse(temp.Substring(temp.IndexOf("=") + 2));
+                                if ((selected != -1)&&(musics.Count != 0))
+                                {
+                                    curMusicPath = musics[selected];
+                                    curMname = musics[selected].Substring(musics[selected].LastIndexOf("\\") + 1);
+                                    mplay.setFirst(curMusicPath);
+                                    showInfo(curMusicPath);
+                                    if (mplay.getImg() != null)
+                                        AlbumImage.Image = mplay.getImg();
+                                    else
+                                        AlbumImage.Image = AlbumImage.ErrorImage;
+                                    setPositionBar();
+                                    first = true;
+                                    start = true;
+                                }
+                                break;
+                            case 2:
+                                vol = int.Parse(temp.Substring(temp.IndexOf("=") + 2));
+                                Volume.Value = vol;
+                                if (curMusicPath != null)
+                                {
+                                    mplay.setVolume(vol);
+                                }
+                                break;
+                            case 3:
+                                myPosition = uint.Parse(temp.Substring(temp.IndexOf("=") + 2));
+                                if (curMusicPath != null)
+                                {
+                                    musicDuration.Value = (int)myPosition;
+                                    if (myPosition % 1000 != 0)
+                                    {
+                                        movenum = (myPosition % 1000) / 100;
+                                    }
+                                    int temp_t = musicDuration.Value;
+                                    string hour_s, min_s, sec_s;
+                                    hour_cur = temp_t / 360000; temp_t -= hour_cur * 360000; hour_s = hour_cur.ToString();
+                                    min_cur = temp_t / 60000; temp_t -= min_cur * 60000; min_s = min_cur.ToString();
+                                    sec_cur = temp_t / 1000; sec_s = sec_cur.ToString();
+
+                                    if (hour_cur < 10)
+                                        hour_s = hour_s.Insert(0, "0");
+                                    if (min_cur < 10)
+                                        min_s = min_s.Insert(0, "0");
+                                    if (sec_cur < 10)
+                                        sec_s = sec_s.Insert(0, "0");
+
+                                    curPosition_Label.Text = hour_s + ":" + min_s + ":" + sec_s;
+                                    mplay.PlayPause(PlayPause.Text, isGoing, curMusicPath);
+                                    mplay.WhenScrolled(myPosition);
+                                    isGoing = true;
+                                    mplay.PlayPause("||", isGoing, curMusicPath);
+                                    musicDuration.Enabled = true;
+                                    PlayPause.Enabled = true;
+                                    if (myPosition > 0)
+                                        Stop.Enabled = true;
+                                    else
+                                    {
+                                        Stop.Enabled = false;
+                                        isGoing = false;
+                                    }
+                                }
+                                break;
+                            case 4:
+                                isplaying = bool.Parse(temp.Substring(temp.IndexOf("=") + 2));
+                                if (isplaying && (myPosition>0))
+                                {
+                                    mplay.PlayPause(PlayPause.Text, isGoing, curMusicPath);
+                                    moveBar = new Thread(new ThreadStart(movePositionBar));
+                                    moveBar.Start();
+                                    PlayPause.Text = "||";
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        index++;
+                    }
+                    settings_r.Close();
+                }
+            }
+            else // 설정 파일이 없으면
+            {
+                mkFile = File.Open(defpath + "\\setting.jyh", FileMode.Create, FileAccess.ReadWrite);
+                mkFile.Close();
+
+                settings_w = new StreamWriter(defpath + "\\setting.jyh");
+                settings_w.WriteLine("List = (default)");
+                settings_w.WriteLine("Selected = -1");
+                settings_w.WriteLine("Volume = 50");
+                settings_w.WriteLine("position = 0");
+                settings_w.WriteLine("isPlaying = false");
+
+                settings_w.Close();
+
+                setList("(default)");
+            }
+        }
+
+        private void setList(string curList)
+        {
+            string[] lists;
+            lists = Directory.GetFiles(defpath + "\\Lists");
+            foreach (string t in lists)
+                PlaylistBar.Items.Add(t.Substring(t.LastIndexOf("\\")+1, t.Substring(t.LastIndexOf("\\")).Length-5));
+            if (!Directory.Exists(defpath + "\\Lists")) // 목록 폴더 여부
+            {
+                Directory.CreateDirectory(defpath + "\\Lists");
+                mkFile = File.Open(defpath + "\\Lists\\(default).alp", FileMode.Create);
+                mkFile.Close();
+            }
+            else
+            {
+                if (!File.Exists(defpath + "\\Lists\\(default).alp"))
+                {
+                    File.Create(defpath + "\\Lists\\(default).alp");
+                }
+            }
+            setMusicLIst(curList);
+        }
+
+        private void setMusicLIst(string curList)
+        {
+            if ((!File.Exists(defpath + "\\Lists\\" + curList + ".alp")) || (curList.Equals("(default)"))) // 기본 목록 폴더 지정시
+            {
+                seList_r = new StreamReader(defpath + "\\Lists\\(default).alp");
+                while (true)
+                {
+                    string t = seList_r.ReadLine();
+                    if ((t == null) || (t.Equals("")))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        musics.Add(t);
+                        MusicList.Items.Add(t.Substring(t.LastIndexOf("\\") + 1));
+                    }
+                }
+                seList_r.Close();
+                PlaylistBar.SelectedIndex = 0;
+            }
+            else // 다른 목록
+            {
+                seList_r = new StreamReader(defpath + "\\Lists\\" + curList + ".alp");
+                while (true)
+                {
+                    string t = seList_r.ReadLine();
+                    if ((t == null) || (t.Equals("")))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        musics.Add(t);
+                        MusicList.Items.Add(t.Substring(t.LastIndexOf("\\") + 1));
+                    }
+                }
+                seList_r.Close();
+                PlaylistBar.SelectedIndex = PlaylistBar.Items.IndexOf(curList);
+            }
+        }
+
+        private void AlPlayer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (moveBar!=null)
+            {
+                mplay.Stop();
+                moveBar.Abort();
+                moveBar.Join();
+            }
+
+            settings_w = new StreamWriter(defpath + "\\setting.jyh");
+            settings_w.WriteLine("List = " + curList);
+            if (((curMusicPath != null) && (!curMusicPath.Equals(""))) || (MusicList.Items.Count == 0))
+                settings_w.WriteLine("Selected = " + musics.IndexOf(curMusicPath));
+            else
+                settings_w.WriteLine("Selected = -1");
+            settings_w.WriteLine("Volume = " + Volume.Value);
+            settings_w.WriteLine("position = " + myPosition);
+            if (PlayPause.Text.Equals("▶"))
+                settings_w.WriteLine("isPlaying = false");
+            else
+                settings_w.WriteLine("isPlaying = true");
+
+            settings_w.Close();
         }
     }
 }

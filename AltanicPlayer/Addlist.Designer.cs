@@ -28,17 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.listname = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.Submit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // textBox1
+            // listname
             // 
-            this.textBox1.Location = new System.Drawing.Point(99, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(173, 21);
-            this.textBox1.TabIndex = 0;
+            this.listname.Location = new System.Drawing.Point(99, 12);
+            this.listname.Name = "listname";
+            this.listname.Size = new System.Drawing.Size(173, 21);
+            this.listname.TabIndex = 0;
+            this.listname.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listname_KeyDown);
             // 
             // label1
             // 
@@ -51,7 +52,7 @@
             // 
             // Submit
             // 
-            this.Submit.Font = new System.Drawing.Font("Adobe Fan Heiti Std B", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Submit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Submit.Location = new System.Drawing.Point(83, 39);
             this.Submit.Name = "Submit";
             this.Submit.Size = new System.Drawing.Size(117, 29);
@@ -68,12 +69,13 @@
             this.ClientSize = new System.Drawing.Size(284, 79);
             this.Controls.Add(this.Submit);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.listname);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Addlist";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Addlist";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Addlist_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -81,7 +83,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox listname;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button Submit;
     }

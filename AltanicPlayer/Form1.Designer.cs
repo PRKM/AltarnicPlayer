@@ -31,7 +31,7 @@
             this.LoadMusic = new System.Windows.Forms.Button();
             this.DelMusic = new System.Windows.Forms.Button();
             this.PlaylistBar = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Del = new System.Windows.Forms.Button();
             this.Add = new System.Windows.Forms.Button();
             this.musicDuration = new System.Windows.Forms.TrackBar();
             this.PlayPause = new System.Windows.Forms.Button();
@@ -92,14 +92,15 @@
             this.PlaylistBar.TabIndex = 1;
             this.PlaylistBar.SelectedIndexChanged += new System.EventHandler(this.PlaylistBar_SelectedIndexChanged);
             // 
-            // button1
+            // Del
             // 
-            this.button1.Location = new System.Drawing.Point(52, 158);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(34, 19);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Del";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Del.Location = new System.Drawing.Point(52, 158);
+            this.Del.Name = "Del";
+            this.Del.Size = new System.Drawing.Size(34, 19);
+            this.Del.TabIndex = 5;
+            this.Del.Text = "Del";
+            this.Del.UseVisualStyleBackColor = true;
+            this.Del.Click += new System.EventHandler(this.Del_Click);
             // 
             // Add
             // 
@@ -109,6 +110,7 @@
             this.Add.TabIndex = 4;
             this.Add.Text = "Add";
             this.Add.UseVisualStyleBackColor = true;
+            this.Add.Click += new System.EventHandler(this.Add_Click);
             // 
             // musicDuration
             // 
@@ -343,7 +345,7 @@
             this.Controls.Add(this.musicDuration);
             this.Controls.Add(this.Add);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.Del);
             this.Controls.Add(this.PlaylistBar);
             this.Controls.Add(this.DelMusic);
             this.Controls.Add(this.LoadMusic);
@@ -370,7 +372,7 @@
         private System.Windows.Forms.Button LoadMusic;
         private System.Windows.Forms.Button DelMusic;
         private System.Windows.Forms.ComboBox PlaylistBar;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button Del;
         private System.Windows.Forms.Button Add;
         private System.Windows.Forms.TrackBar musicDuration;
         private System.Windows.Forms.Button PlayPause;
